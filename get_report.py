@@ -157,8 +157,8 @@ def check_for_lateness(row):
     
     
 def get_claims(date_from, date_to, cursor=0):
-#    url = API_URL
-    url = "https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/search"
+    url = API_URL
+#    url = "https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/search"
   
     timezone_offset = "-05:00"
     payload = json.dumps({
