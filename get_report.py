@@ -168,9 +168,7 @@ def get_claims(date_from, date_to, cursor=0):
         "cursor": cursor
     }) if cursor == 0 else json.dumps({"cursor": cursor})
 
-#    client_secret = CLAIM_SECRETS[SECRETS_MAP[selected_client]]
-    client_secret = CLAIM_SECRETS[0]
-#    client_secret = "y0_AgAAAABpCSWQAAc6MQAAAADecJWo-54QWQeXTcmlC8Qm4hsM5i4Ddtk"
+    client_secret = CLAIM_SECRETS[SECRETS_MAP[selected_client]]
 
     headers = {
         'Content-Type': 'application/json',
