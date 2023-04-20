@@ -157,8 +157,9 @@ def check_for_lateness(row):
     
     
 def get_claims(date_from, date_to, cursor=0):
-    url = API_URL
-
+#    url = API_URL
+    url = "https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/search"
+  
     timezone_offset = "-05:00"
     payload = json.dumps({
         "created_from": f"{date_from}T00:00:00{timezone_offset}",
@@ -167,7 +168,8 @@ def get_claims(date_from, date_to, cursor=0):
         "cursor": cursor
     }) if cursor == 0 else json.dumps({"cursor": cursor})
 
-    client_secret = CLAIM_SECRETS[SECRETS_MAP[selected_client]]
+#    client_secret = CLAIM_SECRETS[SECRETS_MAP[selected_client]]
+    client_secret = "y0_AgAAAABpCSWQAAc6MQAAAADecJWo-54QWQeXTcmlC8Qm4hsM5i4Ddtk"
 
     headers = {
         'Content-Type': 'application/json',
