@@ -16,7 +16,7 @@ import pydeck as pdk
 st.set_page_config(layout="wide")
 
 FILE_BUFFER = io.BytesIO()
-DEFAULT_CLAIM_SECRET = st.secrets["CLAIM_SECRET"]
+# DEFAULT_CLAIM_SECRET = st.secrets["CLAIM_SECRET"]
 CLAIM_SECRETS = st.secrets["CLAIM_SECRETS"]
 # SHEET_KEY = st.secrets["SHEET_KEY"]
 # SHEET_ID = st.secrets["SHEET_ID"]
