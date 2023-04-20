@@ -302,7 +302,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
                                              "extracted_weight", "type", "is_final"])
 #    orders_with_pod = get_pod_orders()
     result_frame = result_frame.apply(lambda row: calculate_distance(row), axis=1)
-    result_frame = result_frame.apply(lambda row: check_for_pod(row, orders_with_pod), axis=1)
+#    result_frame = result_frame.apply(lambda row: check_for_pod(row, orders_with_pod), axis=1)
 #    orders_with_cod = get_cod_orders()
 #    if option != "Tomorrow":
 #        try:
