@@ -18,28 +18,14 @@ st.set_page_config(layout="wide")
 FILE_BUFFER = io.BytesIO()
 DEFAULT_CLAIM_SECRET = st.secrets["CLAIM_SECRET"]
 CLAIM_SECRETS = st.secrets["CLAIM_SECRETS"]
-SHEET_KEY = st.secrets["SHEET_KEY"]
-SHEET_ID = st.secrets["SHEET_ID"]
-COD_SHEET_KEY = st.secrets["COD_SHEET_KEY"]
-COD_SHEET_ID = st.secrets["COD_SHEET_ID"]
+# SHEET_KEY = st.secrets["SHEET_KEY"]
+# SHEET_ID = st.secrets["SHEET_ID"]
+# COD_SHEET_KEY = st.secrets["COD_SHEET_KEY"]
+# COD_SHEET_ID = st.secrets["COD_SHEET_ID"]
 API_URL = st.secrets["API_URL"]
-SECRETS_MAP = {"Petco": 0,
-               "Pets Table": 1,
-               "Huevos": 2,
-               "Inkovsky": 3,
-               "Baby Creisy": 4,
-               "Vigilancia Network": 5,
-               "Lens Market": 6,
-               "Ebebek": 7,
-               "Supplementer": 8,
-               "Sadece-eczane": 9,
-               "Osevio Internet Hizmetleri": 10,
-               "Mevsimi": 11,
-               "Candy Gift": 12,
-               "Akel": 13,
-               "Espresso Perfetto": 14,
-               "Ceviz Agaci": 15,
-               "Guven Sanat": 16}
+SECRETS_MAP = {"Melonn": 0,
+               "Amoblando Pullman": 1,
+               "Bogota test client": 2}
 
 statuses = {
     'delivered': {'type': '4. delivered', 'state': 'in progress'},
@@ -71,68 +57,68 @@ def calculate_distance(row):
     return row
 
 
-def get_pod_orders():
-    service = discovery.build('sheets', 'v4', discoveryServiceUrl=
-    'https://sheets.googleapis.com/$discovery/rest?version=v4',
-                              developerKey=SHEET_KEY)
-
-    spreadsheet_id = SHEET_ID
-    range_ = 'A:A'
-
-    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
-    response = request.execute()
-    pod_orders = [item for sublist in response["values"] for item in sublist]
-    return pod_orders
-
-
-def check_for_pod(row, orders_with_pod):
-    if row["status"] not in ["delivered", "delivered_finish"]:
-        row["proof"] = "-"
-        return row
-    if str(row["client_id"]) in orders_with_pod:
-        row["proof"] = "Proof provided"
-    else:
-        row["proof"] = "No proof"
-    return row
+# def get_pod_orders():
+#    service = discovery.build('sheets', 'v4', discoveryServiceUrl=
+#    'https://sheets.googleapis.com/$discovery/rest?version=v4',
+#                              developerKey=SHEET_KEY)
+#
+#    spreadsheet_id = SHEET_ID
+#    range_ = 'A:A'
+#
+#    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
+#    response = request.execute()
+#    pod_orders = [item for sublist in response["values"] for item in sublist]
+#    return pod_orders
 
 
-def get_cod_orders():
-    service = discovery.build('sheets', 'v4', discoveryServiceUrl=
-    'https://sheets.googleapis.com/$discovery/rest?version=v4',
-                              developerKey=COD_SHEET_KEY)
-    spreadsheet_id = COD_SHEET_ID
-
-    range_ = 'C:C'
-    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
-    response = request.execute()
-    cod_orders = [item for sublist in response["values"] for item in sublist]
-    cod_orders = [item.replace(' ', '').replace('TRK', '') for item in cod_orders]
-
-    range_ = 'E:E'
-    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
-    response = request.execute()
-    cod_links = [item for sublist in response["values"] for item in sublist]
-
-    orders_with_links = dict(zip(cod_orders, cod_links))
-    return orders_with_links
+# def check_for_pod(row, orders_with_pod):
+#    if row["status"] not in ["delivered", "delivered_finish"]:
+#        row["proof"] = "-"
+#        return row
+#    if str(row["client_id"]) in orders_with_pod:
+#        row["proof"] = "Proof provided"
+#    else:
+#        row["proof"] = "No proof"
+#    return row
 
 
-def check_for_cod(row, orders_with_cod: dict):
-    if row["price_of_goods"] < 1:
-        row["cash_collected"] = "Prepaid"
-        row["cash_prooflink"] = "Prepaid"
-        return row
-    if row["status"] not in ["delivered", "delivered_finish"]:
-        row["cash_collected"] = "-"
-        row["cash_prooflink"] = "-"
-        return row
-    if str(row["client_id"]) in orders_with_cod.keys():
-        row["cash_collected"] = "Deposit verified"
-        row["cash_prooflink"] = orders_with_cod[row["client_id"]]
-    else:
-        row["cash_collected"] = "Not verified"
-        row["cash_prooflink"] = "No link"
-    return row
+# def get_cod_orders():
+#    service = discovery.build('sheets', 'v4', discoveryServiceUrl=
+#    'https://sheets.googleapis.com/$discovery/rest?version=v4',
+#                              developerKey=COD_SHEET_KEY)
+#    spreadsheet_id = COD_SHEET_ID
+#
+#    range_ = 'C:C'
+#    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
+#    response = request.execute()
+#    cod_orders = [item for sublist in response["values"] for item in sublist]
+#    cod_orders = [item.replace(' ', '').replace('TRK', '') for item in cod_orders]
+#
+#    range_ = 'E:E'
+#    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
+#    response = request.execute()
+#    cod_links = [item for sublist in response["values"] for item in sublist]
+#
+#    orders_with_links = dict(zip(cod_orders, cod_links))
+#    return orders_with_links
+
+
+# def check_for_cod(row, orders_with_cod: dict):
+#    if row["price_of_goods"] < 1:
+#        row["cash_collected"] = "Prepaid"
+#        row["cash_prooflink"] = "Prepaid"
+#        return row
+#    if row["status"] not in ["delivered", "delivered_finish"]:
+#        row["cash_collected"] = "-"
+#        row["cash_prooflink"] = "-"
+#        return row
+#    if str(row["client_id"]) in orders_with_cod.keys():
+#        row["cash_collected"] = "Deposit verified"
+#        row["cash_prooflink"] = orders_with_cod[row["client_id"]]
+#    else:
+#        row["cash_collected"] = "Not verified"
+#        row["cash_prooflink"] = "No link"
+#    return row
 
   
 def check_for_lateness(row):
@@ -173,7 +159,7 @@ def check_for_lateness(row):
 def get_claims(date_from, date_to, cursor=0):
     url = API_URL
 
-    timezone_offset = "+03:00" if SECRETS_MAP[selected_client] in [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] else "-06:00"
+    timezone_offset = "-05:00"
     payload = json.dumps({
         "created_from": f"{date_from}T00:00:00{timezone_offset}",
         "created_to": f"{date_to}T23:59:59{timezone_offset}",
@@ -207,8 +193,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
     elif option == "Tomorrow":
         offset_back = -1
 
-    client_timezone = "Europe/Istanbul" if SECRETS_MAP[selected_client] in [5, 6, 7, 8, 9, 10, 11, 12,
-                                                                            13, 14, 15] else "America/Mexico_City"
+    client_timezone = "America/Bogota"
 
     if not start_:
         today = datetime.datetime.now(timezone(client_timezone)) - datetime.timedelta(days=offset_back)
@@ -315,15 +300,15 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
                                              "return_reason", "return_comment", "cancel_comment",
                                              "route_id", "lon", "lat", "store_lon", "store_lat", "price_of_goods", "items",
                                              "extracted_weight", "type", "is_final"])
-    orders_with_pod = get_pod_orders()
+#    orders_with_pod = get_pod_orders()
     result_frame = result_frame.apply(lambda row: calculate_distance(row), axis=1)
     result_frame = result_frame.apply(lambda row: check_for_pod(row, orders_with_pod), axis=1)
-    orders_with_cod = get_cod_orders()
-    if option != "Tomorrow":
-        try:
-            result_frame.insert(3, 'proof', result_frame.pop('proof'))
-        except:
-            print("POD malfunction, skip column reorder")
+#    orders_with_cod = get_cod_orders()
+#    if option != "Tomorrow":
+#        try:
+#            result_frame.insert(3, 'proof', result_frame.pop('proof'))
+#        except:
+#            print("POD malfunction, skip column reorder")
 #     if selected_client in ["Not specified"]:
 #         result_frame = result_frame.apply(lambda row: check_for_cod(row, orders_with_cod), axis=1)
 #         result_frame.insert(4, 'cash_collected', result_frame.pop('cash_collected'))
@@ -341,12 +326,11 @@ st.sidebar.caption(f"Page reload doesn't refresh the data.\nInstead, use this bu
 
 selected_client = st.sidebar.selectbox(
     "Select client:",
-    ["Petco", "Pets Table", "Huevos", "Inkovsky", "Baby Creisy", "Vigilancia Network", "Lens Market", "Ebebek", "Supplementer", "Sadece-eczane", "Osevio Internet Hizmetleri",
-     "Mevsimi", "Candy Gift", "Akel", "Espresso Perfetto", "Ceviz Agaci", "Guven Sanat"]
+    ["Melonn", "Amoblando Pullman", "Bogota test client"]
 )
 
-if selected_client == "Petco":
-    st.caption("Petco POD % metric now includes photos uploaded in the app. Data is synchronized every hour (once every XX:00)")
+#if selected_client == "Petco":
+#    st.caption("Petco POD % metric now includes photos uploaded in the app. Data is synchronized every hour (once every XX:00)")
 
 option = st.sidebar.selectbox(
     "Select report date:",
@@ -365,17 +349,12 @@ def get_cached_report(period):
     df_rnt = df_rnt.groupby(['courier_name', 'route_id', 'store_name'])['pickup_address'].nunique().reset_index()
     routes_not_taken = df_rnt[(df_rnt['courier_name'] == "No courier yet") & (df_rnt['route_id'] != "No route")]
     del df_rnt
-    try:
-        pod_provision_rate = len(report[report['proof'] == "Proof provided"]) / len(
-            report[report['status'].isin(['delivered', 'delivered_finish'])])
-        pod_provision_rate = f"{pod_provision_rate:.0%}"
-    except:
-        pod_provision_rate = "--"
+
     delivered_today = len(report[report['status'].isin(['delivered', 'delivered_finish'])])
-    return report, routes_not_taken, pod_provision_rate, delivered_today
+    return report, routes_not_taken, delivered_today
 
 
-df, routes_not_taken, pod_provision_rate, delivered_today = get_cached_report(option)
+df, routes_not_taken, delivered_today = get_cached_report(option)
 
 statuses = st.sidebar.multiselect(
     'Filter by status:',
@@ -408,22 +387,22 @@ couriers = st.sidebar.multiselect(
     df["courier_name"].unique()
 )
 
-only_no_proofs = st.sidebar.checkbox("Only parcels without proofs")
+#only_no_proofs = st.sidebar.checkbox("Only parcels without proofs")
 
-if only_no_proofs:
-    df = df[df["proof"] == "No proof"]
+#if only_no_proofs:
+#    df = df[df["proof"] == "No proof"]
 
 without_cancelled = st.sidebar.checkbox("Without cancels")
 
 if without_cancelled:
     df = df[~df["status"].isin(["cancelled", "performer_not_found", "failed", "estimating_failed", "cancelled_by_taxi", "cancelled_with_payment"])]    
     
-col1, col2, col3 = st.columns(3)
+col1, col3 = st.columns(2)
 col1.metric("Not pickuped routes :minibus:", str(len(routes_not_taken)))
-if pod_provision_rate == "100%": 
-  col2.metric("POD provision :100:", pod_provision_rate)
-else:
-  col2.metric("POD provision :camera:", pod_provision_rate)
+#if pod_provision_rate == "100%": 
+#  col2.metric("POD provision :100:", pod_provision_rate)
+#else:
+#  col2.metric("POD provision :camera:", pod_provision_rate)
 col3.metric(f"Delivered {option.lower()} :package:", delivered_today)
 
 if (not statuses or statuses == []) and (not stores or stores == []):
@@ -440,8 +419,7 @@ if couriers:
 
 st.dataframe(filtered_frame)
 
-client_timezone = "Europe/Istanbul" if SECRETS_MAP[selected_client] in [6, 7, 8, 9, 10, 11, 12,
-                                                                        13, 14, 15, 16] else "America/Mexico_City"
+client_timezone = "America/Bogota"
 TODAY = datetime.datetime.now(timezone(client_timezone)).strftime("%Y-%m-%d") \
     if option == "Today" \
     else datetime.datetime.now(timezone(client_timezone)) - datetime.timedelta(days=1)
