@@ -216,7 +216,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
     report = []
     if selected_client == "All clients":
       client_number = 0  
-      for secret in CLAIM_SECRETS
+      for secret in CLAIM_SECRETS:
             claims, cursor = get_claims(secret, date_from, date_to)
             while cursor:
                 new_page_claims, cursor = get_claims(secret, date_from, date_to, cursor)
