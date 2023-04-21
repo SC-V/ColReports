@@ -229,7 +229,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
 #        print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
 #        print(f"problem: {claim['route_points'][1]['external_order_id']}")
         try:
-            report_client_id = claim['route_points'][1]['external_order_id']
+            report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
         except:
             report_client_id = "unknown"
         report_claim_id = claim['id']
