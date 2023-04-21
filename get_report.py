@@ -214,7 +214,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
 
     today = today.strftime("%Y-%m-%d")
     report = []
-    if selected_client == "All clients"
+    if selected_client == "All clients":
       client_number = 0  
       for secret in CLAIM_SECRETS
             claims, cursor = get_claims(secret, date_from, date_to)
@@ -304,7 +304,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
                       report_weight_kg, report_status_type, report_status_is_final]
                 report.append(row)
             client_number += 1
-    else
+    else:
       secret = CLAIM_SECRETS[SECRETS_MAP[selected_client]]
       claims, cursor = get_claims(secret, date_from, date_to)
         while cursor:
