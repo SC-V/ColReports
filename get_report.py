@@ -226,7 +226,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
             if cutoff_date != today:
                 continue
         report_cutoff = cutoff_time.strftime("%Y-%m-%d %H:%M")
-        print(f"CLAIM: {claim['id']}")
+        print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
         report_client_id = claim['route_points'][1]['external_order_id']
         report_claim_id = claim['id']
         report_pickup_address = claim['route_points'][0]['address']['fullname']
