@@ -234,7 +234,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
               report_cutoff = cutoff_time.strftime("%Y-%m-%d %H:%M")
 #               print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
 #               print(f"problem: {claim['route_points'][1]['external_order_id']}")
-              report_client = CLIENT_MAP[client_number]
+              report_client = CLIENTS_MAP[client_number]
               try:
                   report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
               except:
