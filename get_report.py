@@ -26,6 +26,9 @@ API_URL = st.secrets["API_URL"]
 SECRETS_MAP = {"Melonn": 0,
                "Amoblando Pullman": 1,
                "Bogota test client": 2}
+CLIENTS_MAP = {0:"Melonn",
+               1:"Amoblando Pullman",
+               2:"Bogota test client"}
 
 statuses = {
     'delivered': {'type': '4. delivered', 'state': 'in progress'},
@@ -156,7 +159,7 @@ def check_for_lateness(row):
     return row
     
     
-def get_claims(date_from, date_to, cursor=0):
+def get_claims(secret, date_from, date_to, cursor=0):
     url = API_URL
 #    url = "https://b2b.taxi.yandex.net/b2b/cargo/integration/v2/claims/search"
   
@@ -168,12 +171,12 @@ def get_claims(date_from, date_to, cursor=0):
         "cursor": cursor
     }) if cursor == 0 else json.dumps({"cursor": cursor})
 
-    client_secret = CLAIM_SECRETS[SECRETS_MAP[selected_client]]
+    #client_secret = CLAIM_SECRETS[SECRETS_MAP[selected_client]]
 
     headers = {
         'Content-Type': 'application/json',
         'Accept-Language': 'en',
-        'Authorization': f"Bearer {client_secret}"
+        'Authorization': f"Bearer {secret}"
     }
 
     response = requests.request("POST", url, headers=headers, data=payload)
@@ -211,95 +214,187 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
 
     today = today.strftime("%Y-%m-%d")
     report = []
-    claims, cursor = get_claims(date_from, date_to)
-    while cursor:
-        new_page_claims, cursor = get_claims(date_from, date_to, cursor)
-        claims = claims + new_page_claims
-    for claim in claims:
-        try:
-            claim_from_time = claim['same_day_data']['delivery_interval']['from']
-        except:
-            continue
-        cutoff_time = datetime.datetime.fromisoformat(claim_from_time).astimezone(timezone(client_timezone))
-        cutoff_date = cutoff_time.strftime("%Y-%m-%d")
-        if not start_:
-            if cutoff_date != today:
+    if selected_client == "All clients"
+      client_number = 0  
+      for secret in CLAIM_SECRETS
+            claims, cursor = get_claims(secret, date_from, date_to)
+            while cursor:
+                new_page_claims, cursor = get_claims(secret, date_from, date_to, cursor)
+                claims = claims + new_page_claims
+            for claim in claims:
+                try:
+                    claim_from_time = claim['same_day_data']['delivery_interval']['from']
+                except:
+                    continue
+                cutoff_time = datetime.datetime.fromisoformat(claim_from_time).astimezone(timezone(client_timezone))
+                cutoff_date = cutoff_time.strftime("%Y-%m-%d")
+                if not start_:
+                    if cutoff_date != today:
+                        continue
+                report_cutoff = cutoff_time.strftime("%Y-%m-%d %H:%M")
+#               print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
+#               print(f"problem: {claim['route_points'][1]['external_order_id']}")
+                try:
+                    report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
+                except:
+                    report_client_id = "External order id is blanc"
+                report_claim_id = claim['id']
+                report_pickup_address = claim['route_points'][0]['address']['fullname']
+                report_pod_point_id = str(claim['route_points'][1]['id'])
+                report_receiver_address = claim['route_points'][1]['address']['fullname']
+                report_receiver_phone = claim['route_points'][1]['contact']['phone']
+                report_receiver_name = claim['route_points'][1]['contact']['name']
+                report_status = claim['status']
+                report_status_time = claim['updated_ts']
+                report_store_name = claim['route_points'][0]['contact']['name']
+                report_longitude = claim['route_points'][1]['address']['coordinates'][0]
+                report_latitude = claim['route_points'][1]['address']['coordinates'][1]
+                report_store_longitude = claim['route_points'][0]['address']['coordinates'][0]
+                report_store_latitude = claim['route_points'][0]['address']['coordinates'][1]
+                try: 
+                    report_status_type = statuses[report_status]['type']
+                    report_status_is_final = statuses[report_status]['state']
+                except:
+                    report_status_type = "?. other"
+                    report_status_is_final = "unknown"
+                try:
+                    report_courier_name = claim['performer_info']['courier_name']
+                    report_courier_park = claim['performer_info']['legal_name']
+                except:
+                    report_courier_name = "No courier yet"
+                    report_courier_park = "No courier yet"
+                try:
+                    report_return_reason = str(claim['route_points'][1]['return_reasons'])
+                    report_return_comment = str(claim['route_points'][1]['return_comment'])
+                except:
+                    report_return_reason = "No return reasons"
+                    report_return_comment = "No return comments"
+                try:
+                    report_autocancel_reason = claim['autocancel_reason']
+                except:
+                    report_autocancel_reason = "No cancel reasons"
+                try:
+                    report_route_id = claim['route_id']
+                except:
+                    report_route_id = "No route"
+                try:
+                    report_price_of_goods = 0
+                    for item in claim['items']:
+                        report_price_of_goods += float(item['cost_value'])
+                except:
+                    report_price_of_goods = 0
+                try:
+                    report_goods = ""
+                    for item in claim['items']:
+                        report_goods = report_goods + str(item['title']) + " |"
+                except:
+                    report_goods = "Not specified"
+                try:
+                    report_weight_kg = 0.0
+                    for item in claim['items']:
+                        if re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE):
+                            report_weight_kg = report_weight_kg + float(re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE)[0][0])
+                except:
+                    report_weight_kg = "Not found"
+                row = [report_cutoff, report_client_id, report_claim_id, report_pod_point_id,
+                      report_pickup_address, report_receiver_address, report_receiver_phone, report_receiver_name,
+                      report_status, report_status_time, report_store_name, report_courier_name, report_courier_park,
+                      report_return_reason, report_return_comment, report_autocancel_reason, report_route_id,
+                      report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
+                      report_weight_kg, report_status_type, report_status_is_final]
+                report.append(row)
+            client_number += 1
+    else
+      secret = CLAIM_SECRETS[SECRETS_MAP[selected_client]]
+      claims, cursor = get_claims(secret, date_from, date_to)
+        while cursor:
+            new_page_claims, cursor = get_claims(secret, date_from, date_to, cursor)
+            claims = claims + new_page_claims
+        for claim in claims:
+            try:
+                claim_from_time = claim['same_day_data']['delivery_interval']['from']
+            except:
                 continue
-        report_cutoff = cutoff_time.strftime("%Y-%m-%d %H:%M")
-#        print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
-#        print(f"problem: {claim['route_points'][1]['external_order_id']}")
-        try:
-            report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
-        except:
-            report_client_id = "unknown"
-        report_claim_id = claim['id']
-        report_pickup_address = claim['route_points'][0]['address']['fullname']
-        report_pod_point_id = str(claim['route_points'][1]['id'])
-        report_receiver_address = claim['route_points'][1]['address']['fullname']
-        report_receiver_phone = claim['route_points'][1]['contact']['phone']
-        report_receiver_name = claim['route_points'][1]['contact']['name']
-        report_status = claim['status']
-        report_status_time = claim['updated_ts']
-        report_store_name = claim['route_points'][0]['contact']['name']
-        report_longitude = claim['route_points'][1]['address']['coordinates'][0]
-        report_latitude = claim['route_points'][1]['address']['coordinates'][1]
-        report_store_longitude = claim['route_points'][0]['address']['coordinates'][0]
-        report_store_latitude = claim['route_points'][0]['address']['coordinates'][1]
-        try: 
-            report_status_type = statuses[report_status]['type']
-            report_status_is_final = statuses[report_status]['state']
-        except:
-            report_status_type = "?. other"
-            report_status_is_final = "unknown"
-        try:
-            report_courier_name = claim['performer_info']['courier_name']
-            report_courier_park = claim['performer_info']['legal_name']
-        except:
-            report_courier_name = "No courier yet"
-            report_courier_park = "No courier yet"
-        try:
-            report_return_reason = str(claim['route_points'][1]['return_reasons'])
-            report_return_comment = str(claim['route_points'][1]['return_comment'])
-        except:
-            report_return_reason = "No return reasons"
-            report_return_comment = "No return comments"
-        try:
-            report_autocancel_reason = claim['autocancel_reason']
-        except:
-            report_autocancel_reason = "No cancel reasons"
-        try:
-            report_route_id = claim['route_id']
-        except:
-            report_route_id = "No route"
-        try:
-            report_price_of_goods = 0
-            for item in claim['items']:
-                report_price_of_goods += float(item['cost_value'])
-        except:
-            report_price_of_goods = 0
-        try:
-            report_goods = ""
-            for item in claim['items']:
-                report_goods = report_goods + str(item['title']) + " |"
-        except:
-            report_goods = "Not specified"
-        try:
-            report_weight_kg = 0.0
-            for item in claim['items']:
-                if re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE):
-                    report_weight_kg = report_weight_kg + float(re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE)[0][0])
-        except:
-            report_weight_kg = "Not found"
-        row = [report_cutoff, report_client_id, report_claim_id, report_pod_point_id,
-               report_pickup_address, report_receiver_address, report_receiver_phone, report_receiver_name,
-               report_status, report_status_time, report_store_name, report_courier_name, report_courier_park,
-               report_return_reason, report_return_comment, report_autocancel_reason, report_route_id,
-               report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
-               report_weight_kg, report_status_type, report_status_is_final]
-        report.append(row)
-
+            cutoff_time = datetime.datetime.fromisoformat(claim_from_time).astimezone(timezone(client_timezone))
+            cutoff_date = cutoff_time.strftime("%Y-%m-%d")
+            if not start_:
+               if cutoff_date != today:
+                  continue
+            report_cutoff = cutoff_time.strftime("%Y-%m-%d %H:%M")
+#            print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
+#            print(f"problem: {claim['route_points'][1]['external_order_id']}")
+            report_client = CLIENT_MAP[client_number]
+            try:
+                report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
+            except:
+                report_client_id = "unknown"
+            report_claim_id = claim['id']
+            report_pickup_address = claim['route_points'][0]['address']['fullname']
+            report_pod_point_id = str(claim['route_points'][1]['id'])
+            report_receiver_address = claim['route_points'][1]['address']['fullname']
+            report_receiver_phone = claim['route_points'][1]['contact']['phone']
+            report_receiver_name = claim['route_points'][1]['contact']['name']
+            report_status = claim['status']
+            report_status_time = claim['updated_ts']
+            report_store_name = claim['route_points'][0]['contact']['name']
+            report_longitude = claim['route_points'][1]['address']['coordinates'][0]
+            report_latitude = claim['route_points'][1]['address']['coordinates'][1]
+            report_store_longitude = claim['route_points'][0]['address']['coordinates'][0]
+            report_store_latitude = claim['route_points'][0]['address']['coordinates'][1]
+            try: 
+                report_status_type = statuses[report_status]['type']
+                report_status_is_final = statuses[report_status]['state']
+            except:
+                report_status_type = "?. other"
+                report_status_is_final = "unknown"
+            try:
+                report_courier_name = claim['performer_info']['courier_name']
+                report_courier_park = claim['performer_info']['legal_name']
+            except:
+                report_courier_name = "No courier yet"
+                report_courier_park = "No courier yet"
+            try:
+                report_return_reason = str(claim['route_points'][1]['return_reasons'])
+                report_return_comment = str(claim['route_points'][1]['return_comment'])
+            except:
+                report_return_reason = "No return reasons"
+                report_return_comment = "No return comments"
+            try:
+                report_autocancel_reason = claim['autocancel_reason']
+            except:
+                report_autocancel_reason = "No cancel reasons"
+            try:
+                report_route_id = claim['route_id']
+            except:
+                report_route_id = "No route"
+            try:
+                report_price_of_goods = 0
+                for item in claim['items']:
+                    report_price_of_goods += float(item['cost_value'])
+            except:
+                report_price_of_goods = 0
+            try:
+                report_goods = ""
+                for item in claim['items']:
+                    report_goods = report_goods + str(item['title']) + " |"
+            except:
+                report_goods = "Not specified"
+            try:
+                report_weight_kg = 0.0
+                for item in claim['items']:
+                    if re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE):
+                        report_weight_kg = report_weight_kg + float(re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE)[0][0])
+            except:
+                report_weight_kg = "Not found"
+            row = [report_cutoff, report_client, report_client_id, report_claim_id, report_pod_point_id,
+                  report_pickup_address, report_receiver_address, report_receiver_phone, report_receiver_name,
+                  report_status, report_status_time, report_store_name, report_courier_name, report_courier_park,
+                  report_return_reason, report_return_comment, report_autocancel_reason, report_route_id,
+                  report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
+                  report_weight_kg, report_status_type, report_status_is_final]
+            report.append(row)
     result_frame = pandas.DataFrame(report,
-                                    columns=["cutoff", "client_id", "claim_id", "pod_point_id",
+                                    columns=["cutoff", "client", "client_id", "claim_id", "pod_point_id",
                                              "pickup_address", "receiver_address", "receiver_phone",
                                              "receiver_name", "status", "status_time",
                                              "store_name", "courier_name", "courier_park",
@@ -332,7 +427,7 @@ st.sidebar.caption(f"Page reload doesn't refresh the data.\nInstead, use this bu
 
 selected_client = st.sidebar.selectbox(
     "Select client:",
-    ["Melonn", "Amoblando Pullman", "Bogota test client"]
+    ["Melonn", "Amoblando Pullman", "Bogota test client", "All clients"]
 )
 
 #if selected_client == "Petco":
