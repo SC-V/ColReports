@@ -26,9 +26,9 @@ API_URL = st.secrets["API_URL"]
 SECRETS_MAP = {"Melonn": 0,
                "Amoblando Pullman": 1,
                "Bogota test client": 2}
-CLIENTS_MAP = {0:"Melonn",
-               1:"Amoblando Pullman",
-               2:"Bogota test client"}
+CLIENTS_MAP = {0: "Melonn",
+               1: "Amoblando Pullman",
+               2: "Bogota test client"}
 
 statuses = {
     'delivered': {'type': '4. delivered', 'state': 'in progress'},
