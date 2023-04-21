@@ -393,7 +393,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
                     report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
                     report_weight_kg, report_status_type, report_status_is_final]
               report.append(row)
-    if selected_client = "All clients":
+    if selected_client == "All clients":
         result_frame = pandas.DataFrame(report,
                                     columns=["cutoff", "client", "client_id", "claim_id", "pod_point_id",
                                              "pickup_address", "receiver_address", "receiver_phone",
