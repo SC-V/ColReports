@@ -25,10 +25,12 @@ CLAIM_SECRETS = st.secrets["CLAIM_SECRETS"]
 API_URL = st.secrets["API_URL"]
 SECRETS_MAP = {"Melonn": 0,
                "Amoblando Pullman": 1,
-               "Bogota test client": 2}
+               "Bogota test client": 2,
+               "La Mansion": 3}
 CLIENTS_MAP = {0: "Melonn",
                1: "Amoblando Pullman",
-               2: "Bogota test client"}
+               2: "Bogota test client",
+               3: "La Mansion"}
 
 statuses = {
     'delivered': {'type': '4. delivered', 'state': 'in progress'},
@@ -437,7 +439,7 @@ st.sidebar.caption(f"Page reload doesn't refresh the data.\nInstead, use this bu
 
 selected_client = st.sidebar.selectbox(
     "Select client:",
-    ["Melonn", "Amoblando Pullman", "Bogota test client", "All clients"]
+    ["Melonn", "Amoblando Pullman", "Bogota test client", "La Mansion", "All clients"]
 )
 
 #if selected_client == "Petco":
