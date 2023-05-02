@@ -648,7 +648,7 @@ with st.expander(":round_pushpin: Orders on a map"):
 #         st.dataframe(cash_management_df.groupby(['courier_name'])['price_of_goods'].agg(['sum', 'count']).reset_index())
 
 with st.expander(":clipboard: Store/ route details"): 
-    pivot_report_frame = pandas.pivot_table(filtered_frame, values='claim_id', index=['client', 'store_name', 'route_id', 'cutoff', 'courier_name'], columns=['type'], aggfunc=lambda x: len(x.unique()), fill_value="-").reset_index()
+    pivot_report_frame = pandas.pivot_table(filtered_frame, values='claim_id', index=['client', 'store_name', 'route_id', 'courier_name'], columns=['type'], aggfunc=lambda x: len(x.unique()), fill_value="-").reset_index()
     pivot_report_frame = pivot_report_frame.apply(lambda row: check_for_lateness(row), axis=1)
     only_cats = st.checkbox("Only concerned routes")
     if only_cats:
