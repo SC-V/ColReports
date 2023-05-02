@@ -330,6 +330,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
               report_cutoff = cutoff_time.strftime("%Y-%m-%d %H:%M")
   #            print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
   #            print(f"problem: {claim['route_points'][1]['external_order_id']}")
+              report_client = selected_client
               try:
                   report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
               except:
@@ -396,25 +397,15 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
                           report_weight_kg = report_weight_kg + float(re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE)[0][0])
               except:
                   report_weight_kg = "Not found"
-              row = [report_cutoff, report_client_id, report_claim_id, report_pod_point_id,
+              row = [report_cutoff, report_client, report_client_id, report_claim_id, report_pod_point_id,
                     report_pickup_address, report_receiver_address, report_receiver_phone, report_receiver_name, report_comment,
                     report_status, report_status_time, report_store_name, report_courier_name, report_courier_park,
                     report_return_reason, report_return_comment, report_autocancel_reason, report_route_id,
                     report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
                     report_weight_kg, report_status_type, report_status_is_final]
               report.append(row)
-    if selected_client == "All clients":
-        result_frame = pandas.DataFrame(report,
+    result_frame = pandas.DataFrame(report,
                                     columns=["cutoff", "client", "client_id", "claim_id", "pod_point_id",
-                                             "pickup_address", "receiver_address", "receiver_phone",
-                                             "receiver_name", "comment", "status", "status_time",
-                                             "store_name", "courier_name", "courier_park",
-                                             "return_reason", "return_comment", "cancel_comment",
-                                             "route_id", "lon", "lat", "store_lon", "store_lat", "price_of_goods", "items",
-                                             "extracted_weight", "type", "is_final"])
-    else:
-        result_frame = pandas.DataFrame(report,
-                                    columns=["cutoff", "client_id", "claim_id", "pod_point_id",
                                              "pickup_address", "receiver_address", "receiver_phone",
                                              "receiver_name", "comment", "status", "status_time",
                                              "store_name", "courier_name", "courier_park",
