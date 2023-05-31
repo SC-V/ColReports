@@ -196,7 +196,7 @@ def get_claims(secret, date_from, date_to, cursor=0):
     return claims['claims'], cursor
 
 
-def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
+def get_report(client_option="All clients", option="Today", start_=None, end_=None) -> pandas.DataFrame:
     offset_back = 0
     if option == "Yesterday":
         offset_back = 1
@@ -220,7 +220,7 @@ def get_report(option="Today", start_=None, end_=None) -> pandas.DataFrame:
 
     today = today.strftime("%Y-%m-%d")
     report = []
-    if selected_client == "All clients":
+    if client_option == "All clients":
       client_number = 0  
       for secret in CLAIM_SECRETS:
           claims, cursor = get_claims(secret, date_from, date_to)
@@ -455,12 +455,12 @@ option = st.sidebar.selectbox(
 
 
 @st.cache_data
-def get_cached_report(period):
+def get_cached_report(client_option, period):
 
     if option == "Monthly":
-        report = get_report(period, start_="2023-05-01", end_="2023-05-31")
+        report = get_report(client_option, period, start_="2023-05-01", end_="2023-05-31")
     else:
-        report = get_report(period)
+        report = get_report(client_option, period)
     df_rnt = report[~report['status'].isin(["cancelled", "performer_not_found", "failed"])]
     df_rnt = df_rnt.groupby(['courier_name', 'route_id', 'store_name'])['pickup_address'].nunique().reset_index()
     routes_not_taken = df_rnt[(df_rnt['courier_name'] == "No courier yet") & (df_rnt['route_id'] != "No route")]
@@ -470,7 +470,7 @@ def get_cached_report(period):
     return report, routes_not_taken, delivered_today
 
 
-df, routes_not_taken, delivered_today = get_cached_report(option)
+df, routes_not_taken, delivered_today = get_cached_report(selected_client, option)
 
 statuses = st.sidebar.multiselect(
     'Filter by status:',
