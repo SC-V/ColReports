@@ -547,7 +547,7 @@ st.caption(
     f'Total of :blue[{len(filtered_frame)}] orders in the table. Following stores have not pickuped routes: :red[{stores_with_not_taken_routes}]')
 
 download_enabled = st.checkbox("enable download")
-if download_enabled:
+while download_enabled:
     with pandas.ExcelWriter(FILE_BUFFER, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name='routes_report')
         writer.close()
@@ -559,8 +559,7 @@ if download_enabled:
             mime="application/vnd.ms-excel"
         ):
           download_enabled = False
-else:
-    st.write("if you need a file check the box")
+
     
 with st.expander(":round_pushpin: Orders on a map"):
     st.caption(
