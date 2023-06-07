@@ -546,22 +546,22 @@ stores_with_not_taken_routes = ', '.join(str(x) for x in routes_not_taken["store
 st.caption(
     f'Total of :blue[{len(filtered_frame)}] orders in the table. Following stores have not pickuped routes: :red[{stores_with_not_taken_routes}]')
 
-while True:
-    switch = True
-    while switch:
-        download_enabled = st.checkbox("enable download")
-        if download_enabled:
-            with pandas.ExcelWriter(FILE_BUFFER, engine='xlsxwriter') as writer:
-                df.to_excel(writer, sheet_name='routes_report')
-                writer.close()
 
-                if st.download_button(
-                    label="Download report as xlsx",
-                    data=FILE_BUFFER,
-                    file_name=f"route_report_{TODAY}.xlsx",
-                    mime="application/vnd.ms-excel"
-                ):
-                  switch = False
+switch = True
+while switch:
+    download_enabled = st.checkbox("enable download")
+    if download_enabled:
+        with pandas.ExcelWriter(FILE_BUFFER, engine='xlsxwriter') as writer:
+            df.to_excel(writer, sheet_name='routes_report')
+            writer.close()
+
+            if st.download_button(
+                label="Download report as xlsx",
+                data=FILE_BUFFER,
+                file_name=f"route_report_{TODAY}.xlsx",
+                mime="application/vnd.ms-excel"
+            ):
+              switch = False
 
     
 with st.expander(":round_pushpin: Orders on a map"):
