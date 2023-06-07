@@ -545,6 +545,7 @@ TODAY = datetime.datetime.now(timezone(client_timezone)).strftime("%Y-%m-%d") \
 stores_with_not_taken_routes = ', '.join(str(x) for x in routes_not_taken["store_name"].unique())
 st.caption(
     f'Total of :blue[{len(filtered_frame)}] orders in the table. Following stores have not pickuped routes: :red[{stores_with_not_taken_routes}]')
+turn_back=False
 download_enabled = st.checkbox("enable download", Value = turn_back)
 if download_enabled:
     with pandas.ExcelWriter(FILE_BUFFER, engine='xlsxwriter') as writer:
@@ -557,7 +558,7 @@ if download_enabled:
             file_name=f"route_report_{TODAY}.xlsx",
             mime="application/vnd.ms-excel"
         ):
-          turn_back = false
+          turn_back = False
 else:
     st.write("if you need a file check the box")
     
