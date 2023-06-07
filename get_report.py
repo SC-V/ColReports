@@ -545,18 +545,21 @@ TODAY = datetime.datetime.now(timezone(client_timezone)).strftime("%Y-%m-%d") \
 stores_with_not_taken_routes = ', '.join(str(x) for x in routes_not_taken["store_name"].unique())
 st.caption(
     f'Total of :blue[{len(filtered_frame)}] orders in the table. Following stores have not pickuped routes: :red[{stores_with_not_taken_routes}]')
+download_enabled = st.checkbox("enable download")
+if download_enabled:
+    with pandas.ExcelWriter(FILE_BUFFER, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='routes_report')
+        writer.close()
 
-with pandas.ExcelWriter(FILE_BUFFER, engine='xlsxwriter') as writer:
-    df.to_excel(writer, sheet_name='routes_report')
-    writer.close()
-
-    st.download_button(
-        label="Download report as xlsx",
-        data=FILE_BUFFER,
-        file_name=f"route_report_{TODAY}.xlsx",
-        mime="application/vnd.ms-excel"
-    )
-
+        st.download_button(
+            label="Download report as xlsx",
+            data=FILE_BUFFER,
+            file_name=f"route_report_{TODAY}.xlsx",
+            mime="application/vnd.ms-excel"
+        )
+else:
+    st.write("if you need a file check the box")
+    
 with st.expander(":round_pushpin: Orders on a map"):
     st.caption(
         f'Hover order to see details. Stores are the big points on a map. :green[Green] orders are delivered, and :red[red] – are the in delivery state. :orange[Orange] are returned or returning. Gray are cancelled.')
