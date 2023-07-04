@@ -316,7 +316,7 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
               except:
                   report_weight_kg = "Not found"
               row = [report_cutoff, report_client, report_client_id, report_claim_id, report_pod_point_id,
-                    report_pickup_address, report_receiver_address, report_receiver_phone, report_receiver_name, report_comment,
+                    report_pickup_address, report_receiver_name, report_comment,
                     report_status, report_status_time, report_store_name, report_courier_name, report_courier_park,
                     report_return_reason, report_return_comment, report_autocancel_reason, report_route_id,
                     report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
@@ -410,7 +410,7 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
               except:
                   report_weight_kg = "Not found"
               row = [report_cutoff, report_client, report_client_id, report_claim_id, report_pod_point_id,
-                    report_pickup_address, report_receiver_address, report_receiver_phone, report_receiver_name, report_comment,
+                    report_pickup_address, report_receiver_address, report_comment,
                     report_status, report_status_time, report_store_name, report_courier_name, report_courier_park,
                     report_return_reason, report_return_comment, report_autocancel_reason, report_route_id,
                     report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
@@ -418,8 +418,7 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
               report.append(row)
     result_frame = pandas.DataFrame(report,
                                     columns=["cutoff", "client", "client_id", "claim_id", "pod_point_id",
-                                             "pickup_address", "receiver_address", "receiver_phone",
-                                             "receiver_name", "comment", "status", "status_time",
+                                             "pickup_address", "receiver_address", "comment", "status", "status_time",
                                              "store_name", "courier_name", "courier_park",
                                              "return_reason", "return_comment", "cancel_comment",
                                              "route_id", "lon", "lat", "store_lon", "store_lat", "price_of_goods", "items",
