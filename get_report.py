@@ -46,7 +46,7 @@ CLIENTS_MAP = {0: "Melonn",
                6: "Loto del Sur",
                7: "Shopping Go",
                8: "Guia Cereza",
-               9: "Distrihogar"
+               9: "Distrihogar",
                10: "Wild & Pacific",
                11: "Studio F",
                12: "Bukz",
