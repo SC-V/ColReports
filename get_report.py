@@ -32,7 +32,11 @@ SECRETS_MAP = {"Melonn": 0,
                "Loto del Sur": 6,
                "Shopping Go": 7,
                "Guia Cereza": 8,
-               "Distrihogar": 9}
+               "Distrihogar": 9,
+               "Wild & Pacific": 10,
+               "Studio F": 11,
+               "Bukz": 12,
+               "Tiendas Branchos": 13}
 CLIENTS_MAP = {0: "Melonn",
                1: "Amoblando Pullman",
                2: "Bogota test client",
@@ -42,7 +46,11 @@ CLIENTS_MAP = {0: "Melonn",
                6: "Loto del Sur",
                7: "Shopping Go",
                8: "Guia Cereza",
-               9: "Distrihogar"}
+               9: "Distrihogar"
+               10: "Wild & Pacific",
+               11: "Studio F",
+               12: "Bukz",
+               13: "Tiendas Branchos"}
 
 statuses = {
     'delivered': {'type': '4. delivered', 'state': 'in progress'},
@@ -449,7 +457,9 @@ st.sidebar.caption(f"Page reload doesn't refresh the data.\nInstead, use this bu
 
 selected_client = st.sidebar.selectbox(
     "Select client:",
-    ["Melonn", "Amoblando Pullman", "Bogota test client", "La Mansion", "Sutex", "Laika", "Loto del Sur", "Shopping Go", "Guia Cereza", "Distrihogar", "All clients"]
+    ["Melonn", "Amoblando Pullman", "Bogota test client", "La Mansion", "Sutex",
+     "Laika", "Loto del Sur", "Shopping Go", "Guia Cereza", "Distrihogar",
+     "Wild & Pacific", "Studio F", "Bukz", "Tiendas Branchos", "All clients"]
 )
 
 #if selected_client == "Petco":
