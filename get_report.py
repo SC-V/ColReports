@@ -247,8 +247,8 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
     if client_option == "All clients":
       client_number = 0  
       for secret in CLAIM_SECRETS:
-          st.write(client_number)
-          st.write(secret)
+          #st.write(client_number)
+          #st.write(secret)
           claims, cursor = get_claims(secret, date_from, date_to)
           while cursor:
               new_page_claims, cursor = get_claims(secret, date_from, date_to, cursor)
