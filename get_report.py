@@ -36,7 +36,11 @@ SECRETS_MAP = {"Melonn": 0,
                "Wild & Pacific": 10,
                "Studio F": 11,
                "Bukz": 12,
-               "Tiendas Branchos": 13}
+               "Tiendas Branchos": 13,
+               "Exiagrícola": 14,
+               "Distrisex": 15,
+               "Vibes": 16,
+               "Stop Jeans": 17}
 CLIENTS_MAP = {0: "Melonn",
                1: "Amoblando Pullman",
                2: "Bogota test client",
@@ -50,7 +54,11 @@ CLIENTS_MAP = {0: "Melonn",
                10: "Wild & Pacific",
                11: "Studio F",
                12: "Bukz",
-               13: "Tiendas Branchos"}
+               13: "Tiendas Branchos",
+               14: "Exiagrícola",
+               15: "Distrisex",
+               16: "Vibes",
+               17: "Stop Jeans"}
 
 statuses = {
     'delivered': {'type': '4. delivered', 'state': 'in progress'},
