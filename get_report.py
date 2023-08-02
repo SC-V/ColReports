@@ -40,7 +40,8 @@ SECRETS_MAP = {"Melonn": 0,
                "Exiagrícola": 14,
                "Distrisex": 15,
                "Vibes": 16,
-               "Stop Jeans": 17}
+               "Stop Jeans": 17,
+               "Medivaric": 18}
 CLIENTS_MAP = {0: "Melonn",
                1: "Amoblando Pullman",
                2: "Bogota test client",
@@ -58,7 +59,8 @@ CLIENTS_MAP = {0: "Melonn",
                14: "Exiagrícola",
                15: "Distrisex",
                16: "Vibes",
-               17: "Stop Jeans"}
+               17: "Stop Jeans",
+               18: "Medivaric"}
 
 statuses = {
     'delivered': {'type': '4. delivered', 'state': 'in progress'},
@@ -470,7 +472,7 @@ selected_client = st.sidebar.selectbox(
     ["Melonn", "Amoblando Pullman", "Bogota test client", "La Mansion", "Sutex",
      "Laika", "Loto del Sur", "Shopping Go", "Guia Cereza", "Distrihogar",
      "Wild & Pacific", "Studio F", "Bukz", "Tiendas Branchos", "Exiagrícola",
-     "Distrisex", "Vibes", "Stop Jeans", "All clients"]
+     "Distrisex", "Vibes", "Stop Jeans", "Medivaric", "All clients"]
 )
 
 #if selected_client == "Petco":
