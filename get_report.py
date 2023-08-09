@@ -41,7 +41,9 @@ SECRETS_MAP = {"Melonn": 0,
                "Distrisex": 15,
                "Vibes": 16,
                "Stop Jeans": 17,
-               "Medivaric": 18}
+               "Medivaric": 18,
+               "Krika": 19,
+               "Vitaliah": 20}
 CLIENTS_MAP = {0: "Melonn",
                1: "Amoblando Pullman",
                2: "Bogota test client",
@@ -60,7 +62,9 @@ CLIENTS_MAP = {0: "Melonn",
                15: "Distrisex",
                16: "Vibes",
                17: "Stop Jeans",
-               18: "Medivaric"}
+               18: "Medivaric",
+               19: "Krika",
+               20: "Vitaliah"}
 
 statuses = {
     'delivered': {'type': '4. delivered', 'state': 'in progress'},
