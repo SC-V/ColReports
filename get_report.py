@@ -476,7 +476,7 @@ selected_client = st.sidebar.selectbox(
     ["Melonn", "Amoblando Pullman", "Bogota test client", "La Mansion", "Sutex",
      "Laika", "Loto del Sur", "Shopping Go", "Guia Cereza", "Distrihogar",
      "Wild & Pacific", "Studio F", "Bukz", "Tiendas Branchos", "Exiagrícola",
-     "Distrisex", "Vibes", "Stop Jeans", "Medivaric", "All clients"]
+     "Distrisex", "Vibes", "Stop Jeans", "Medivaric", "Krika", "Vitaliah", "All clients"]
 )
 
 #if selected_client == "Petco":
