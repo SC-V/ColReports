@@ -405,7 +405,10 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
               try:
                   report_comment = claim['route_points'][1]['address']['comment']
               except:
-                  report_comment = "No comment"
+                  try:
+                      report_comment = claim['comment']
+                  except:
+                      report_comment = "No comment"
               report_status = claim['status']
               report_status_time = claim['updated_ts']
               report_store_name = claim['route_points'][0]['contact']['name']
