@@ -8,7 +8,6 @@ import time
 import re
 from pytz import timezone
 import streamlit as st
-import streamlit_analytics
 import pydeck as pdk
 
 st.set_page_config(layout="wide")
