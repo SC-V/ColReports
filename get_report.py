@@ -6,9 +6,7 @@ import numpy
 import io
 import time
 import re
-import haversine as hs
 from pytz import timezone
-from googleapiclient import discovery
 import streamlit as st
 import streamlit_analytics
 import pydeck as pdk
@@ -110,12 +108,6 @@ statuses = {
     'estimating_failed': {'type': 'X. cancelled', 'state': 'final'},
     'cancelled_with_payment': {'type': 'X. cancelled', 'state': 'final'}
 }
-
-def calculate_distance(row):
-    location_1 = (row["lat"], row["lon"])
-    location_2 = (row["store_lat"], row["store_lon"])
-    row["linear_distance"] = round(hs.haversine(location_1, location_2), 2)
-    return row
 
 
 # def get_pod_orders():
@@ -476,7 +468,7 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
                                              "route_id", "lon", "lat", "store_lon", "store_lat", "price_of_goods", "items",
                                              "extracted_weight", "type", "is_final"])
 #    orders_with_pod = get_pod_orders()
-    result_frame = result_frame.apply(lambda row: calculate_distance(row), axis=1)
+    # result_frame = result_frame.apply(lambda row: calculate_distance(row), axis=1)
 #    result_frame = result_frame.apply(lambda row: check_for_pod(row, orders_with_pod), axis=1)
 #    orders_with_cod = get_cod_orders()
 #    if option != "Tomorrow":
