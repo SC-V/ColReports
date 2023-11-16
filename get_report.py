@@ -483,7 +483,6 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
     return result_frame
 
 
-streamlit_analytics.start_tracking()
 st.markdown(f"# Routes report")
 
 if st.sidebar.button("Refresh data", type="primary"):
@@ -712,5 +711,3 @@ with st.expander(":clipboard: Store/ route details"):
     if only_cats:
         pivot_report_frame = pivot_report_frame[pivot_report_frame['cutoff'].str.contains('🙀')]
     st.dataframe(pivot_report_frame, use_container_width=True)
-
-streamlit_analytics.stop_tracking()
