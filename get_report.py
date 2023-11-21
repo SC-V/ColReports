@@ -218,7 +218,7 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
               try:
                   report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
               except:
-                  report_client_id = "External order id is blanc"
+                  report_client_id = "External order id is blank"
               report_claim_id = claim['id']
               report_pickup_address = claim['route_points'][0]['address']['fullname']
               report_pod_point_id = str(claim['route_points'][1]['id'])
@@ -341,6 +341,10 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
                       report_comment = claim['comment']
                   except:
                       report_comment = "No comment"
+              try:
+                  report_general_comment = claim['comment']
+              except:
+                  report_general_comment = "No comment"
               report_status = claim['status']
               report_status_time = claim['updated_ts']
               report_store_name = claim['route_points'][0]['contact']['name']
