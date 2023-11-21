@@ -13,12 +13,7 @@ import pydeck as pdk
 st.set_page_config(layout="wide")
 
 FILE_BUFFER = io.BytesIO()
-# DEFAULT_CLAIM_SECRET = st.secrets["CLAIM_SECRET"]
 CLAIM_SECRETS = st.secrets["CLAIM_SECRETS"]
-# SHEET_KEY = st.secrets["SHEET_KEY"]
-# SHEET_ID = st.secrets["SHEET_ID"]
-# COD_SHEET_KEY = st.secrets["COD_SHEET_KEY"]
-# COD_SHEET_ID = st.secrets["COD_SHEET_ID"]
 API_URL = st.secrets["API_URL"]
 SECRETS_MAP = {"Melonn": 0,
                "Amoblando Pullman": 1,
@@ -107,70 +102,6 @@ statuses = {
     'estimating_failed': {'type': 'X. cancelled', 'state': 'final'},
     'cancelled_with_payment': {'type': 'X. cancelled', 'state': 'final'}
 }
-
-
-# def get_pod_orders():
-#    service = discovery.build('sheets', 'v4', discoveryServiceUrl=
-#    'https://sheets.googleapis.com/$discovery/rest?version=v4',
-#                              developerKey=SHEET_KEY)
-#
-#    spreadsheet_id = SHEET_ID
-#    range_ = 'A:A'
-#
-#    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
-#    response = request.execute()
-#    pod_orders = [item for sublist in response["values"] for item in sublist]
-#    return pod_orders
-
-
-# def check_for_pod(row, orders_with_pod):
-#    if row["status"] not in ["delivered", "delivered_finish"]:
-#        row["proof"] = "-"
-#        return row
-#    if str(row["client_id"]) in orders_with_pod:
-#        row["proof"] = "Proof provided"
-#    else:
-#        row["proof"] = "No proof"
-#    return row
-
-
-# def get_cod_orders():
-#    service = discovery.build('sheets', 'v4', discoveryServiceUrl=
-#    'https://sheets.googleapis.com/$discovery/rest?version=v4',
-#                              developerKey=COD_SHEET_KEY)
-#    spreadsheet_id = COD_SHEET_ID
-#
-#    range_ = 'C:C'
-#    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
-#    response = request.execute()
-#    cod_orders = [item for sublist in response["values"] for item in sublist]
-#    cod_orders = [item.replace(' ', '').replace('TRK', '') for item in cod_orders]
-#
-#    range_ = 'E:E'
-#    request = service.spreadsheets().values().get(spreadsheetId=spreadsheet_id, range=range_)
-#    response = request.execute()
-#    cod_links = [item for sublist in response["values"] for item in sublist]
-#
-#    orders_with_links = dict(zip(cod_orders, cod_links))
-#    return orders_with_links
-
-
-# def check_for_cod(row, orders_with_cod: dict):
-#    if row["price_of_goods"] < 1:
-#        row["cash_collected"] = "Prepaid"
-#        row["cash_prooflink"] = "Prepaid"
-#        return row
-#    if row["status"] not in ["delivered", "delivered_finish"]:
-#        row["cash_collected"] = "-"
-#        row["cash_prooflink"] = "-"
-#        return row
-#    if str(row["client_id"]) in orders_with_cod.keys():
-#        row["cash_collected"] = "Deposit verified"
-#        row["cash_prooflink"] = orders_with_cod[row["client_id"]]
-#    else:
-#        row["cash_collected"] = "Not verified"
-#        row["cash_prooflink"] = "No link"
-#    return row
 
   
 def check_for_lateness(row):
@@ -283,8 +214,6 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
                   if cutoff_date != today:
                       continue
               report_cutoff = cutoff_time.strftime("%Y-%m-%d %H:%M")
-#               print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
-#               print(f"problem: {claim['route_points'][1]['external_order_id']}")
               report_client = CLIENTS_MAP[client_number]
               try:
                   report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
@@ -303,6 +232,10 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
                       report_comment = claim['comment']
                   except:
                       report_comment = "No comment"
+              try:
+                  report_general_comment = claim['comment']
+              except:
+                  report_general_comment = "No comment"
               report_status = claim['status']
               report_status_time = claim['updated_ts']
               report_store_name = claim['route_points'][0]['contact']['name']
@@ -355,12 +288,22 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
                           report_weight_kg = report_weight_kg + float(re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE)[0][0])
               except:
                   report_weight_kg = "Not found"
+              try:
+                  report_point_B_time = datetime.datetime.strptime(claim['route_points'][1]['visited_at']['actual'],"%Y-%m-%dT%H:%M:%S.%f%z").astimezone(timezone(client_timezone))
+                  report_point_B_time = report_point_B_time.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+              except:
+                  report_point_B_time = "Point B was never visited"
+              try:
+                  report_point_A_time = datetime.datetime.strptime(claim['route_points'][0]['visited_at']['actual'],"%Y-%m-%dT%H:%M:%S.%f%z").astimezone(timezone(client_timezone))
+                  report_point_A_time = report_point_A_time.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+              except:
+                  report_point_A_time = "Point A missing pick datetime"
               row = [report_cutoff, report_client, report_client_id, report_claim_id, report_pod_point_id,
                     report_pickup_address, report_receiver_name, report_comment,
                     report_status, report_status_time, report_store_name, report_courier_name, report_courier_park,
                     report_return_reason, report_return_comment, report_autocancel_reason, report_route_id,
                     report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
-                    report_weight_kg, report_status_type, report_status_is_final]
+                    report_weight_kg, report_status_type, report_status_is_final, report_point_A_time, report_point_B_time, report_general_comment]
               report.append(row)
           client_number += 1
     else:
@@ -380,8 +323,6 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
                  if cutoff_date != today:
                     continue
               report_cutoff = cutoff_time.strftime("%Y-%m-%d %H:%M")
-  #            print(f"CLAIM: {claim['id']}, {date_from}, {date_to}")
-  #            print(f"problem: {claim['route_points'][1]['external_order_id']}")
               report_client = selected_client
               try:
                   report_client_id = claim['route_points'][1]['external_order_id'].replace("\t", " ")
@@ -452,12 +393,22 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
                           report_weight_kg = report_weight_kg + float(re.findall(r"(\d*\.?\d+)\s*(kgs?)\b", str(item['title']), flags=re.IGNORECASE)[0][0])
               except:
                   report_weight_kg = "Not found"
+              try:
+                  report_point_B_time = datetime.datetime.strptime(claim['route_points'][1]['visited_at']['actual'],"%Y-%m-%dT%H:%M:%S.%f%z").astimezone(timezone(client_timezone))
+                  report_point_B_time = report_point_B_time.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+              except:
+                  report_point_B_time = "Point B was never visited"
+              try:
+                  report_point_A_time = datetime.datetime.strptime(claim['route_points'][0]['visited_at']['actual'],"%Y-%m-%dT%H:%M:%S.%f%z").astimezone(timezone(client_timezone))
+                  report_point_A_time = report_point_A_time.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+              except:
+                  report_point_A_time = "Point A missing pick datetime"
               row = [report_cutoff, report_client, report_client_id, report_claim_id, report_pod_point_id,
                     report_pickup_address, report_receiver_address, report_comment,
                     report_status, report_status_time, report_store_name, report_courier_name, report_courier_park,
                     report_return_reason, report_return_comment, report_autocancel_reason, report_route_id,
                     report_longitude, report_latitude, report_store_longitude, report_store_latitude, report_price_of_goods, report_goods, 
-                    report_weight_kg, report_status_type, report_status_is_final]
+                    report_weight_kg, report_status_type, report_status_is_final, report_point_A_time, report_point_B_time, report_general_comment]
               report.append(row)
     result_frame = pandas.DataFrame(report,
                                     columns=["cutoff", "client", "client_id", "claim_id", "pod_point_id",
@@ -465,21 +416,7 @@ def get_report(client_option="All clients", option="Today", start_=None, end_=No
                                              "store_name", "courier_name", "courier_park",
                                              "return_reason", "return_comment", "cancel_comment",
                                              "route_id", "lon", "lat", "store_lon", "store_lat", "price_of_goods", "items",
-                                             "extracted_weight", "type", "is_final"])
-#    orders_with_pod = get_pod_orders()
-    # result_frame = result_frame.apply(lambda row: calculate_distance(row), axis=1)
-#    result_frame = result_frame.apply(lambda row: check_for_pod(row, orders_with_pod), axis=1)
-#    orders_with_cod = get_cod_orders()
-#    if option != "Tomorrow":
-#        try:
-#            result_frame.insert(3, 'proof', result_frame.pop('proof'))
-#        except:
-#            print("POD malfunction, skip column reorder")
-#     if selected_client in ["Not specified"]:
-#         result_frame = result_frame.apply(lambda row: check_for_cod(row, orders_with_cod), axis=1)
-#         result_frame.insert(4, 'cash_collected', result_frame.pop('cash_collected'))
-#         result_frame.insert(5, 'cash_prooflink', result_frame.pop('cash_prooflink'))
-#         result_frame.insert(6, 'price_of_goods', result_frame.pop('price_of_goods'))
+                                             "extracted_weight", "type", "is_final", "point_a_time", "point_b_time", "general_comment"])
     return result_frame
 
 
@@ -557,23 +494,14 @@ couriers = st.sidebar.multiselect(
     df["courier_name"].unique()
 )
 
-#only_no_proofs = st.sidebar.checkbox("Only parcels without proofs")
-
-#if only_no_proofs:
-#    df = df[df["proof"] == "No proof"]
-
 without_cancelled = st.sidebar.checkbox("Without cancels")
 
 if without_cancelled:
     df = df[~df["status"].isin(["cancelled", "performer_not_found", "failed", "estimating_failed", "cancelled_by_taxi", "cancelled_with_payment"])]    
     
-col1, col3 = st.columns(2)
+col1, col2 = st.columns(2)
 col1.metric("Not pickuped routes :minibus:", str(len(routes_not_taken)))
-#if pod_provision_rate == "100%": 
-#  col2.metric("POD provision :100:", pod_provision_rate)
-#else:
-#  col2.metric("POD provision :camera:", pod_provision_rate)
-col3.metric(f"Delivered {option.lower()} :package:", delivered_today)
+col2.metric(f"Delivered {option.lower()} :package:", delivered_today)
 
 if (not statuses or statuses == []) and (not stores or stores == []):
     filtered_frame = df
@@ -594,20 +522,17 @@ TODAY = datetime.datetime.now(timezone(client_timezone)).strftime("%Y-%m-%d") \
     if option == "Today" \
     else datetime.datetime.now(timezone(client_timezone)) - datetime.timedelta(days=1)
 
-stores_with_not_taken_routes = ', '.join(str(x) for x in routes_not_taken["store_name"].unique())
 st.caption(
-    f'Total of :blue[{len(filtered_frame)}] orders in the table. Following stores have not pickuped routes: :red[{stores_with_not_taken_routes}]')
+    f'Total of :blue[{len(filtered_frame)}] orders in the table.')
 
-
-
-
+# Download button
 if st.checkbox("enable download"):
     with pandas.ExcelWriter(FILE_BUFFER, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name='routes_report')
         writer.close()
         st.download_button(label="Download report as xlsx",data=FILE_BUFFER,file_name=f"route_report_{TODAY}.xlsx",mime="application/vnd.ms-excel")
 
-    
+# Map widget
 with st.expander(":round_pushpin: Orders on a map"):
     st.caption(
         f'Hover order to see details. Stores are the big points on a map. :green[Green] orders are delivered, and :red[red] – are the in delivery state. :orange[Orange] are returned or returning. Gray are cancelled.')
@@ -697,17 +622,3 @@ with st.expander(":round_pushpin: Orders on a map"):
             )
         ],
     ))
-
-# if selected_client == "Quiken":
-#     with st.expander(":moneybag: Unreported cash on couriers:"):
-#         st.caption(f'Shows, how much money couriers have with them – and for how many orders. Counting only delivered orders without proof of deposit provided.')
-#         cash_management_df = df[(df["status"].isin(['delivered', 'delivered_finish'])) & (df["cash_collected"] == "Not verified")]
-#         st.dataframe(cash_management_df.groupby(['courier_name'])['price_of_goods'].agg(['sum', 'count']).reset_index())
-
-with st.expander(":clipboard: Store/ route details"): 
-    pivot_report_frame = pandas.pivot_table(filtered_frame, values='claim_id', index=['client', 'store_name', 'route_id', 'cutoff', 'courier_name'], columns=['type'], aggfunc=lambda x: len(x.unique()), fill_value="-").reset_index()
-    pivot_report_frame = pivot_report_frame.apply(lambda row: check_for_lateness(row), axis=1)
-    only_cats = st.checkbox("Only concerned routes")
-    if only_cats:
-        pivot_report_frame = pivot_report_frame[pivot_report_frame['cutoff'].str.contains('🙀')]
-    st.dataframe(pivot_report_frame, use_container_width=True)
