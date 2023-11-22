@@ -453,7 +453,8 @@ selected_client = st.sidebar.selectbox(
      "Wild & Pacific", "Studio F", "Bukz", "Tiendas Branchos", "Exiagrícola",
      "Distrisex", "Vibes", "Stop Jeans", "Medivaric", "Krika", "Vitaliah", "Pasarex",
      "Crystal", "Foodology", "Pa Mascotas", "Fiorenzi", "Medipiel", "Dermos", "Teku",
-     "Undergold", "Explora", "PatPrimo", "All clients"]
+     "Undergold", "Explora", "PatPrimo", "Lunia", "La Peau", "Liza Herrera Calzado", 
+     "Fenomena", "Offcorss", "Replays", "Axspen", "Alma de las cosas ","All clients"]
 )
 
 #if selected_client == "Petco":
